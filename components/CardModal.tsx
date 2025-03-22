@@ -33,7 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 export default function CardModal() {
   const dispatch = useDispatch();
   const { items } = useSelector((state: RootState) => state.cart);
-  console.log("items", items);
+  // console.log("items", items);
 
   function handleRemoveProduct(id: number) {
     const selectedProduct = items.filter((item) => item._id === id);

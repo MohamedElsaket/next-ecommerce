@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 import {
   Dialog,
   DialogContent,
@@ -15,7 +17,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import {
@@ -41,7 +42,7 @@ type WixAuthResponse = {
 export default function SignUpForm() {
   const wixClient = useWixClient();
   const router = useRouter();
-  const [showVerification, setShowVerification] = useState(false);
+  const [errorMassage, setErrorMassage] = useState("");
   const [loasding, setLoasding] = useState(false);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -50,6 +51,11 @@ export default function SignUpForm() {
       username: "",
       email: "",
       password: "",
+    },
+    errors: {
+      email: {
+        message: errorMassage,
+      } as any,
     },
   });
 
@@ -64,25 +70,18 @@ export default function SignUpForm() {
 
       console.log("Full Response", response);
 
-      console.log("Session Token", response.data.sessionToken);
-
-      Cookies.set("test cookie", "Signed up");
-
       if (response?.loginState === "SUCCESS") {
         const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
           response.data.sessionToken!
         );
-        console.log(tokens.accessToken);
-        console.log(tokens.refreshToken);
 
         Cookies.set("refreshToken", JSON.stringify(tokens.refreshToken), {
           expires: 2,
         });
         wixClient.auth.setTokens(tokens);
-        console.log("Redirecting to home...");
-        // router.push("/");
+        router.push("/");
       } else {
-        console.log("smthg wrong");
+        setErrorMassage("Email already exists");
       }
     } catch (error: any) {
       console.log(error);

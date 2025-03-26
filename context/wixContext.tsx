@@ -2,11 +2,11 @@
 
 import { createContext, ReactNode } from "react";
 
-import Cookies from "js-cookie";
-import { products, collections } from "@wix/stores";
 import { createClient, OAuthStrategy } from "@wix/sdk";
+import { collections, products } from "@wix/stores";
+import Cookies from "js-cookie";
 
-const refreshToken = JSON.parse(Cookies.get("refreshToken") || "{}");
+// const refreshToken = JSON.parse(Cookies.get("refreshToken") || "{}");
 
 const wixClient = createClient({
   modules: {
@@ -16,7 +16,7 @@ const wixClient = createClient({
   auth: OAuthStrategy({
     clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
     tokens: {
-      refreshToken,
+      refreshToken: JSON.parse(Cookies.get("refreshToken") || "{}"),
       accessToken: { value: "", expiresAt: 0 },
     },
   }),

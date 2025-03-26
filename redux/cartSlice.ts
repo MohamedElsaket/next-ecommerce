@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface Cart {
   _id: number;
@@ -50,6 +50,10 @@ export const cartSlice = createSlice({
         (item) => item._id !== action.payload._id
       );
       localStorage.setItem("cartItems", JSON.stringify(state.items));
+
+      if (state.items.length === 0) {
+        localStorage.removeItem("cartItems");
+      }
     },
 
     clearItems: (state) => {

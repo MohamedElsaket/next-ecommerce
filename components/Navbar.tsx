@@ -10,25 +10,40 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { useWixClient } from "@/hooks/useWixContext";
+import Cookies from "js-cookie";
 import { Bell, CircleUserRound, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import CardModal from "./CardModal";
 import MobileNav from "./MobileNav";
 import SearchBar from "./SearchBar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useWixClient } from "@/hooks/useWixContext";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 
 export default function Navbar() {
+  const [isLoading, setIsLoading] = useState(false);
   const wixClient = useWixClient();
   const router = useRouter();
 
   async function logout() {
+    setIsLoading(true);
     Cookies.remove("refreshToken");
+    localStorage.removeItem("cartItems");
 
-    const { logoutUrl } = await wixClient.auth.logout(window.location.href);
-    router.push(logoutUrl);
+    try {
+      const { logoutUrl } = await wixClient.auth.logout(window.location.href);
+
+      router.push(logoutUrl);
+
+      toast.success("Logged out successfully");
+    } catch (error) {
+      setIsLoading(false);
+      toast.error("Failed to log out");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -70,11 +85,14 @@ export default function Navbar() {
               </Link>
             </Button>
             <Button
-              className="flex items-center gap-2 bg-red-500"
+              className={`flex items-center gap-2 bg-red-500 ${
+                isLoading ? "opacity-95" : "opacity-100"
+              }`}
               onClick={logout}
+              disabled={isLoading}
             >
               <LogOut />
-              <span>Logout</span>
+              <span>{isLoading ? "Loading..." : "Log out"}</span>
             </Button>
           </PopoverContent>
         </Popover>

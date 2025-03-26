@@ -17,16 +17,17 @@ import {
 } from "@/components/ui/form";
 import { useWixClient } from "@/hooks/useWixContext";
 import { logInSchema } from "@/schema/validation";
+import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const wixClient = useWixClient();
   const router = useRouter();
   const [errorMassage, setErrorMassage] = useState("");
-  const [loasding, setLoasding] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof logInSchema>>({
     resolver: zodResolver(logInSchema),
@@ -42,7 +43,8 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof logInSchema>) {
-    console.log("Submitted values: ", values);
+    setIsLoading(true);
+    // console.log("Submitted values: ", values);
 
     try {
       let response = await wixClient.auth.login({
@@ -54,23 +56,49 @@ export default function LoginForm() {
 
       if (response?.loginState === "SUCCESS") {
         if (!Cookies.get("refreshToken")) {
-          const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
-            response.data.sessionToken!
-          );
+          // ↓↓↓ THIS CODE SHOULD BE FROM WIX STUDIO BUT THERE'S SOMTHING WRONG WITH WIX BUILT IN FUNCTIONS (getMemberTokensForDirectLogin())
+
+          // const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
+          //   response.data.sessionToken!
+          // );
+
+          const tokens = {
+            accessToken: Math.floor(
+              10000000000000 + Math.random() * 90000000000000
+            ).toString(),
+            refreshToken: Math.floor(
+              10000000000000 + Math.random() * 90000000000000
+            ).toString(),
+          };
+
+          wixClient.auth.setTokens(tokens as any);
+
           Cookies.set("refreshToken", JSON.stringify(tokens.refreshToken), {
             expires: 2,
           });
         }
 
         router.push("/");
-      } else if (response?.loginState === "FAILURE") {
+
+        toast.success("Logged in successfully");
+      } else if (
+        response?.loginState === "FAILURE" &&
+        response?.errorCode === "invalidPassword"
+      ) {
         setErrorMassage(response?.errorCode || "Something went wrong");
+        // wixClient.auth.sendPasswordResetEmail(
+        //   values.email,
+        //   "https://localhost:3000/login"
+        // );
       } else {
         console.log("Something went wrong");
+        setErrorMassage("Something went wrong");
       }
     } catch (error: any) {
       console.log(error);
       console.log("Error Response:", error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -115,8 +143,20 @@ export default function LoginForm() {
           </Link>
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className={isLoading ? "opacity-95" : "opacity-100"}
+        >
+          {isLoading ? "Loading..." : "Log in"}
+        </Button>
       </form>
     </Form>
   );
 }
+
+// 1. if the errorCode = invalidPassword, go to path 'restPassword'
+// 2. Create a new page called 'restPassword' and create a new component called 'RestPasswordForm'
+// 3. Create a new schema called 'restPasswordSchema'
+
+// Go t line 88

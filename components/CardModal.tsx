@@ -29,10 +29,11 @@ import { RootState } from "@/redux/store";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 export default function CardModal() {
   const dispatch = useDispatch();
-  const { items } = useSelector((state: RootState) => state.cart);
+  let { items } = useSelector((state: RootState) => state.cart);
   // console.log("items", items);
 
   function handleRemoveProduct(id: number) {
@@ -40,6 +41,10 @@ export default function CardModal() {
     // console.log(selectedProduct[0]);
 
     dispatch(removeItem(selectedProduct[0]));
+  }
+
+  if (!Cookies.get("refreshToken")) {
+    items = [];
   }
 
   return (
@@ -102,11 +107,17 @@ export default function CardModal() {
           {/* Check out */}
           <div className="flex justify-between items-center font-bold py-3 border-y border-slate-900">
             <p>Total Price</p>
-            <p>$ {items.reduce((acc, item) => acc + item.price.price, 0)}</p>
+            <p>
+              ${" "}
+              {items.reduce(
+                (acc, item) => acc + item.price.price * item.quantity,
+                0
+              )}
+            </p>
           </div>
         </div>
 
-        <div className="relative w-full px-4 overflow-scroll">
+        <div className="relative w-full px-4 overflow-auto">
           {/* Cards */}
           {items.length ? (
             items.map((item) => (

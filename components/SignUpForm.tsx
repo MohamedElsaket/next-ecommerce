@@ -9,17 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-
-import {
   Form,
   FormControl,
   FormField,
@@ -31,19 +20,13 @@ import { useWixClient } from "@/hooks/useWixContext";
 import { signUpSchema } from "@/schema/validation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-type WixAuthResponse = {
-  loginState: string;
-  data: {
-    sessionToken: string;
-  };
-};
+import toast from "react-hot-toast";
 
 export default function SignUpForm() {
   const wixClient = useWixClient();
   const router = useRouter();
   const [errorMassage, setErrorMassage] = useState("");
-  const [loasding, setLoasding] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -60,32 +43,50 @@ export default function SignUpForm() {
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log("Submitted values: ", values);
+    setIsLoading(true);
+    // console.log("Submitted values: ", values);
 
     try {
-      let response = (await wixClient.auth.register({
+      let response = await wixClient.auth.register({
         email: values.email,
         password: values.password,
-      })) as WixAuthResponse;
+      });
 
-      console.log("Full Response", response);
+      // console.log("Full Response", response);
 
-      if (response?.loginState === "SUCCESS") {
-        const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
-          response.data.sessionToken!
-        );
+      if (response.loginState === "SUCCESS") {
+        // ↓↓↓ THIS CODE SHOULD BE FROM WIX STUDIO BUT THERE'S SOMTHING WRONG WITH WIX BUILT IN FUNCTIONS (getMemberTokensForDirectLogin())
+
+        // const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
+        //   response.data.sessionToken!
+        // );
+
+        const tokens = {
+          accessToken: Math.floor(
+            10000000000000 + Math.random() * 90000000000000
+          ).toString(),
+          refreshToken: Math.floor(
+            10000000000000 + Math.random() * 90000000000000
+          ).toString(),
+        };
+
+        wixClient.auth.setTokens(tokens as any);
 
         Cookies.set("refreshToken", JSON.stringify(tokens.refreshToken), {
           expires: 2,
         });
-        wixClient.auth.setTokens(tokens);
+
         router.push("/");
+
+        toast.success("Welcome, Registered successfully");
       } else {
         setErrorMassage("Email already exists");
       }
     } catch (error: any) {
       console.log(error);
       console.log("Error Response:", error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -136,49 +137,13 @@ export default function SignUpForm() {
           )}
         />
 
-        {/* {showVerification && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Edit Profile</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value="Pedro Duarte"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="username" className="text-right">
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    value="@peduarte"
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )} */}
-
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className={isLoading ? "opacity-95" : "opacity-100"}
+        >
+          {isLoading ? "Loading..." : "Submit"}
+        </Button>
       </form>
     </Form>
   );

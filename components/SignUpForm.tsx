@@ -21,6 +21,7 @@ import { signUpSchema } from "@/schema/validation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function SignUpForm() {
   const wixClient = useWixClient();
@@ -144,6 +145,13 @@ export default function SignUpForm() {
         >
           {isLoading ? "Loading..." : "Submit"}
         </Button>
+
+        <div className="text-sm">
+          <p>Already have account?</p>
+          <Link href={"/login"} className="underline">
+            &larr; Log in
+          </Link>
+        </div>
       </form>
     </Form>
   );

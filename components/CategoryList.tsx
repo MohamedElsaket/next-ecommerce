@@ -1,4 +1,10 @@
 import { wixClientServer } from "@/lib/wixClientServer";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoveLeftIcon,
+  MoveRightIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,7 +18,13 @@ export default async function CategoryList() {
   // const length = 60;
 
   return (
-    <div className=" px-4 overflow-x-scroll scrollbar-hide">
+    <div className="px-4 overflow-x-scroll scrollbar-hide">
+      <span className="absolute z-50 right-8 -bottom-8 opacity-50">
+        <ChevronRight />
+      </span>
+      <span className="absolute z-50 left-8 -bottom-8 opacity-50">
+        <ChevronLeft />
+      </span>
       <div className="overflow-x-scroll scrollbar-hide">
         <div className="flex gap-4 md:gap-8">
           {items.map((category) => (

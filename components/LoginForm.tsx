@@ -86,10 +86,6 @@ export default function LoginForm() {
         response?.errorCode === "invalidPassword"
       ) {
         setErrorMassage(response?.errorCode || "Something went wrong");
-        // wixClient.auth.sendPasswordResetEmail(
-        //   values.email,
-        //   "https://localhost:3000/login"
-        // );
       } else {
         console.log("Something went wrong");
         setErrorMassage("Something went wrong");
@@ -136,13 +132,6 @@ export default function LoginForm() {
           )}
         />
 
-        <div className="flex items-center gap-1 text-sm">
-          <p>Do not have account?</p>
-          <Link href={"/signup"} className="underline">
-            create account
-          </Link>
-        </div>
-
         <Button
           type="submit"
           disabled={isLoading}
@@ -150,13 +139,14 @@ export default function LoginForm() {
         >
           {isLoading ? "Loading..." : "Log in"}
         </Button>
+
+        <div className="text-sm">
+          <p>Do not have account?</p>
+          <Link href={"/signup"} className="underline">
+            create account &rarr;
+          </Link>
+        </div>
       </form>
     </Form>
   );
 }
-
-// 1. if the errorCode = invalidPassword, go to path 'restPassword'
-// 2. Create a new page called 'restPassword' and create a new component called 'RestPasswordForm'
-// 3. Create a new schema called 'restPasswordSchema'
-
-// Go t line 88

@@ -14,10 +14,6 @@ const Footer = () => {
           >
             <Image src={"/logo.png"} alt="Logo" fill className="object-cover" />
           </Link>
-          <p>
-            3252 Winding Way, Central Plaza, Willowbrook, CA 90210, United
-            States
-          </p>
           <span className="font-semibold">mohamedelsaket25@gmail.com</span>
           <span className="font-semibold">+201030848281</span>
           <div className="flex gap-6">

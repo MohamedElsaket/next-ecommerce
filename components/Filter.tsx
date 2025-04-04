@@ -27,7 +27,7 @@ export default function Filter() {
   }
 
   return (
-    <div className="px-4 py-4 bg-gray-100">
+    <div className="px-4 py-4 bg-gray-100 pt-24">
       <h1 className="text-2xl font-semibold text-gray-700 mb-6">Filters</h1>
       <div className="flex justify-between items-center gap-4  flex-wrap">
         <Select

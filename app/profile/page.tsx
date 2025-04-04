@@ -1,8 +1,9 @@
 "use client";
 
 // import { useWixClient } from "@/hooks/useWixContext";
-import { useRouter } from "next/navigation";
+
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   // THIS CODE SHOULD BE FROM WIX STUDIO BUT THERE'S SOMTHING WRONG WITH WIX BUILT IN FUNCTIONS (getMemberTokensForDirectLogin())
@@ -18,5 +19,9 @@ export default function page() {
 
   if (!Cookies.get("refreshToken")) router.push("/login");
 
-  return <div>Profile Page</div>;
+  return (
+    <div>
+      <h2>Profile Page</h2>
+    </div>
+  );
 }

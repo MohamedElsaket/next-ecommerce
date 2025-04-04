@@ -17,7 +17,7 @@ export default async function page({ searchParams }: { searchParams: any }) {
 
   return (
     <div>
-      <div className="hidden bg-pink-50 px-4 sm:flex justify-between h-64">
+      {/* <div className="hidden bg-pink-50 px-4 sm:flex justify-between h-64 pt-12">
         <div className="w-2/3 flex flex-col items-center justify-center gap-8">
           <h1 className="text-4xl font-semibold leading-[48px] text-gray-700">
             Grab up to 50% off on
@@ -30,7 +30,8 @@ export default async function page({ searchParams }: { searchParams: any }) {
         <div className="relative w-1/3">
           <Image src="/woman.png" alt="" fill className="object-contain" />
         </div>
-      </div>
+      </div> */}
+
       <Filter />
 
       <h1 className="font-semibold mt-12 text-2xl md:text-3xl px-3 md:px-8">

@@ -56,9 +56,7 @@ export default function Navbar() {
         >
           <Image src={"/logo.png"} alt="Logo" fill className="object-cover" />
         </Link>
-        <div className="hidden lg:flex gap-8">
-          <Links />
-        </div>
+        {/* <div className="hidden lg:flex gap-8"><Links /></div> */}
       </div>
 
       <div className="flex items-center gap-4">
